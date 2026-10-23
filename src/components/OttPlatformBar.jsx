@@ -46,14 +46,6 @@ export default function OttPlatformBar({
   return (
     <div className="ott-platform-bar-wrapper">
       <div className="ott-platform-bar-inner">
-        <div className="ott-bar-left-label">
-          <div className="ott-tv-pulse-wrap">
-            <Tv size={15} className="ott-tv-icon" />
-            <span className="tv-pulse-dot" />
-          </div>
-          <span className="ott-label-text">OTT PLATFORMS</span>
-        </div>
-
         <div className="ott-chips-nav-container">
           {canScrollLeft && (
             <button 
@@ -111,19 +103,6 @@ export default function OttPlatformBar({
             </button>
           )}
         </div>
-
-        <button 
-          className="netmirror-center-trigger-btn"
-          onClick={onOpenNetmirrorCenter}
-          title="Open Streaming Center & Network Status"
-        >
-          <Zap size={13} className="bolt-icon" />
-          <span className="btn-label-text">NetMirror Center</span>
-          <span className="live-status-pill">
-            <span className="live-dot-ping" />
-            LIVE
-          </span>
-        </button>
       </div>
     </div>
   );

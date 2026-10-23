@@ -121,16 +121,7 @@ export default function Navbar({
           )}
         </div>
 
-        {/* NetMirror Center Hub Trigger Button */}
-        <button
-          className="nav-netmirror-hub-btn"
-          onClick={onOpenNetmirrorCenter}
-          title="Open Streaming Center & Network Status"
-        >
-          <Zap size={15} className="hub-bolt-icon" />
-          <span className="hub-text">NetMirror</span>
-          <span className="hub-live-dot" />
-        </button>
+
 
         {/* Audio Ta-Dum Toggle & Test */}
         <button 

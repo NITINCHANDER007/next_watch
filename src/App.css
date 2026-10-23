@@ -3792,8 +3792,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
   max-width: 100%;
   margin: 0;
 }
@@ -3879,14 +3878,22 @@
 .ott-platform-chips-scroll {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 4px 8px;
+  padding: 4px 12px;
   flex: 1;
   scroll-behavior: smooth;
   mask-image: linear-gradient(to right, transparent 0%, black 18px, black calc(100% - 18px), transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 18px, black calc(100% - 18px), transparent 100%);
+}
+
+@media (min-width: 900px) {
+  .ott-platform-chips-scroll {
+    justify-content: center;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
 }
 
 .ott-platform-chips-scroll::-webkit-scrollbar {
