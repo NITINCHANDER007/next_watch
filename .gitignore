@@ -26,3 +26,5 @@ scratch_*
 lint_output.txt
 .gemini
 
+
+.vercel
