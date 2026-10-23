@@ -200,7 +200,7 @@ export default function App() {
   const isIndianCinema = (m) => {
     if (m.categories?.includes('bollywood')) return true;
     const hay = `${m.title} ${(m.genres || []).join(' ')} ${(m.tags || []).join(' ')} ${m.audio || ''} ${m.synopsis || ''}`.toLowerCase();
-    return /hindi|tamil|telugu|kannada|malayalam|marathi|punjabi|bengali|india|bollywood|tollywood|kollywood|drishyam|awarapan|gehraiyaan|rocky aur rani|teri baaton|sita ramam|khalifa|dupahiya|lenin pandiyan|jailer|sardar|mirzapur|panchayat|radhe shyam|jawan|pathaan|dangal|agneepath|b\.a\. pass|kurla to|traitors \(telugu\)|waiting hai|masterplan|hokum/i.test(hay);
+    return /hindi|tamil|telugu|kannada|malayalam|marathi|punjabi|bengali|india|bollywood|tollywood|kollywood|drishyam|awarapan|gehraiyaan|rocky aur rani|teri baaton|sita ramam|khalifa|dupahiya|lenin pandiyan|jailer|sardar|mirzapur|panchayat|radhe shyam|jawan|pathaan|dangal|agneepath|b\.a\. pass|kurla to|traitors \(telugu\)|waiting hai|masterplan|hokum|hanu|kalki|stree|animal|fighter|maharaja|shaitaan|kill|bhool bhulaiyaa|singham|asur|chhaava|dunki|salaar/i.test(hay);
   };
 
   // Helper to accurately classify Anime & Asian animation
@@ -245,10 +245,32 @@ export default function App() {
     return platformMovies.filter((m) => m.categories?.includes('drama'));
   }, [platformMovies]);
 
+  // Latest blockbusters & new arrivals (prioritizing Hanu-Man and 2024/2025 Bollywood hits)
+  const latestMovies = useMemo(() => {
+    const list = MOVIES.filter(
+      (m) => m.categories?.includes('latest') || m.releaseYear >= 2024 || (m.releaseYear >= 2023 && isIndianCinema(m))
+    );
+    return list.sort((a, b) => {
+      const aScore = (a.id === 'hanu-man' ? 100 : 0) + (a.categories?.includes('latest') ? 20 : 0) + (a.releaseYear || 2020);
+      const bScore = (b.id === 'hanu-man' ? 100 : 0) + (b.categories?.includes('latest') ? 20 : 0) + (b.releaseYear || 2020);
+      return bScore - aScore;
+    });
+  }, []);
+
   // Select Billboard Featured Movie based on active OTT and category
   const billboardMovie = useMemo(() => {
+    if (activeCategory === 'latest' || activeCategory === 'trending') {
+      return (
+        MOVIES.find((m) => m.id === 'hanu-man') ||
+        MOVIES.find((m) => m.id === 'kalki-2898-ad') ||
+        MOVIES.find((m) => m.id === 'stree-2') ||
+        latestMovies[0] ||
+        platformMovies[0]
+      );
+    }
     if (activeCategory === 'bollywood') {
       return (
+        bollywoodMovies.find((m) => m.id === 'hanu-man') ||
         bollywoodMovies.find((m) => m.id === '235527' || m.title === 'Agneepath') ||
         bollywoodMovies[0] ||
         platformMovies[0]
@@ -404,11 +426,11 @@ export default function App() {
     if (activeCategory === 'anime') {
       return animeMovies;
     }
-    if (activeCategory === 'trending') {
-      return platformMovies.filter((m) => m.categories?.includes('trending'));
+    if (activeCategory === 'latest' || activeCategory === 'trending') {
+      return latestMovies.length > 0 ? latestMovies : platformMovies.filter((m) => m.categories?.includes('latest') || m.categories?.includes('trending'));
     }
     return platformMovies;
-  }, [activeCategory, myListIds, seriesMovies, featureMovies, bollywoodMovies, hollywoodMovies, animeMovies, platformMovies]);
+  }, [activeCategory, myListIds, seriesMovies, featureMovies, bollywoodMovies, hollywoodMovies, animeMovies, latestMovies, platformMovies]);
 
   return (
     <div
@@ -641,8 +663,21 @@ export default function App() {
                 />
               )}
 
+              {/* New Arrivals & Latest Bollywood Blockbusters */}
+              {(activeCategory === 'all' || activeCategory === 'latest' || activeCategory === 'trending') && latestMovies.length > 0 && (
+                <MovieRow
+                  title="🔥 New Arrivals & Latest Bollywood Blockbusters"
+                  movies={latestMovies}
+                  onPlay={handlePlayMovie}
+                  onOpenDetail={handleOpenDetail}
+                  isInMyList={isInMyList}
+                  onToggleMyList={toggleMyList}
+                  onExplore={() => setActiveCategory('latest')}
+                />
+              )}
+
               {/* Top 10 in Your Country Today (Legendary 3D Number Row) */}
-              {(activeCategory === 'all' || activeCategory === 'trending') && (
+              {(activeCategory === 'all' || activeCategory === 'trending' || activeCategory === 'latest') && (
                 <MovieRow
                   title={'Top 10 on ' + currentOttMeta.name + ' Today'}
                   movies={top10Movies.length > 0 ? top10Movies : platformMovies.slice(0, 10)}
@@ -656,7 +691,7 @@ export default function App() {
               )}
 
               {/* Bollywood Blockbusters & Indian Cinema */}
-              {(activeCategory === 'all' || activeCategory === 'bollywood') && bollywoodMovies.length > 0 && (
+              {(activeCategory === 'all' || activeCategory === 'bollywood' || activeCategory === 'latest') && bollywoodMovies.length > 0 && (
                 <MovieRow
                   title={currentOttMeta.name === 'Netflix' ? 'Bollywood Blockbusters & Indian Cinema' : currentOttMeta.name + ' Bollywood & Indian Cinema'}
                   movies={bollywoodMovies}
@@ -789,7 +824,7 @@ export default function App() {
               <section className="category-filter-section" style={{ marginTop: '2rem' }}>
                 <div className="category-header">
                   <h2 className="category-title">
-                    All {activeCategory === 'bollywood' ? 'Bollywood & Indian' : activeCategory === 'hollywood' ? 'Hollywood' : activeCategory === 'anime' ? 'Anime' : activeCategory === 'tv' ? 'TV Shows' : activeCategory === 'movies' ? 'Movies' : 'Popular'} Titles ({categoryMovies.length})
+                    All {activeCategory === 'latest' ? 'New Arrivals & Latest' : activeCategory === 'bollywood' ? 'Bollywood & Indian' : activeCategory === 'hollywood' ? 'Hollywood' : activeCategory === 'anime' ? 'Anime' : activeCategory === 'tv' ? 'TV Shows' : activeCategory === 'movies' ? 'Movies' : 'Popular'} Titles ({categoryMovies.length})
                   </h2>
                 </div>
                 <div className="movies-grid">

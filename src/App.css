@@ -100,12 +100,17 @@
 }
 
 .netflix-logo svg {
+  display: block;
+  height: 28px;
+  width: auto;
+  max-width: 108px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 2px 8px rgba(229, 9, 20, 0.25));
 }
 
 .netflix-master-header.scrolled .netflix-logo svg {
-  width: 90px;
-  height: 26px;
+  height: 24px;
+  max-width: 92px;
 }
 
 .netflix-logo:hover {
